@@ -1,19 +1,234 @@
 ---
-title: "Chapter 2"
-output: html_notebook
+title: "Statistical Rethinking - Chapter 2"
+output:
+  html_document:
+    df_print: paged
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-```{r}
-plot(cars)
+```{r, echo=FALSE, message=FALSE}
+library(knitr)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+Questions from 'Statistical Rethinking' by Richard McElreath, Chapter 2.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+# Easy
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+1. 2&4 - $Pr(rain|Monday)$ & $Pr(rain,Monday) / Pr(Monday)$
+2. 3 - The probability that it is Monday, given that it is raining. 
+3. 1&4 - $Pr(Monday|rain)$ & $Pr(rain|Monday) Pr(Monday) / Pr(rain)$
+4. We are inferring the % of water on the globe and relating this to the probability of a finger landing on water after tossing the globe. This probability has not objective reality as it either ends up on water or land, it cannot end up on 0.7 water.
+
+# Medium
+## Question 1
+Calculate posterior distributions:
+a) WWW 
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#define prior
+prior <- rep(1,20)
+#number 1 x 20 times
+
+# compute likelihood 
+likelihood <- dbinom(3, size = 3, prob = pGrid)
+
+# likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+b) WWWL
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#define prior
+prior <- rep(1,20)
+#number 1 x 20 times
+
+#compute likelihood 
+likelihood <- dbinom(3, size = 4, prob = pGrid)
+
+#likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+c) LWWLWWW
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#define prior
+prior <- rep(1,20)
+#number 1 x 20 times
+
+#compute likelihood
+likelihood <- dbinom(5, size = 7, prob = pGrid)
+
+#likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+## Question 2
+Prior at <0.5 is 0 and >=0 is 1
+a) WWW 
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#define prior
+prior <- ifelse(pGrid<0.5,0,1)
+#number 1 x 20 times
+
+# compute likelihood 
+likelihood <- dbinom(3, size = 3, prob = pGrid)
+
+# likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+b) WWWL
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#use above prior
+
+#compute likelihood 
+likelihood <- dbinom(3, size = 4, prob = pGrid)
+
+#likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+c) LWWLWWW
+```{r}
+#define grid
+pGrid <- seq(from = 0, to = 1, length.out = 20)
+#sequence of 20 evenly spaced numbers from 0 to 1
+
+#use above prior
+
+#compute likelihood
+likelihood <- dbinom(5, size = 7, prob = pGrid)
+
+#likelihood x prior
+unstdPosterior <- likelihood*prior
+
+#standardise
+post <- unstdPosterior/sum(unstdPosterior)
+
+plot(post)
+```
+
+## Question 3
+Prove $Pr(Earth|land)=0.23$
+
+$Pr(Earth|land)=Pr(land|Earth)Pr(Earth)/Pr(land)$
+
+$Pr(Earth|land)=(0.30*0.5)/0.65=0.23$
+
+Note that: $Pr(land)=(0.5*0.3)+(0.5*1)$ or $Pr(Earth,land)+Pr(Mars,land)$ 
+
+## Question 4
+
+* Card 1: 2
+* Card 2: 1
+* Card 3: 0
+
+$Pr(card1|data)=2/3$
+
+## Question 5
+
+* Card 1: 2
+* Card 2: 1
+* Card 3: 0
+* Card 4: 2
+
+$Pr(card1\cup card4 |data)=4/5$
+
+## Question 6
+
+* Card 1: black side-2, weight-1 = 2
+* Card 2: black side-1, weight-2 = 2
+* Card 3: black side-0, weight-3 = 0
+
+$Pr(card1|data) = 2/4=0.5$
+
+## Question 7
+
+* BB:2
+  +BW:1 - 2
+  +WW:2 - 4
+* BW:1
+  +WW:2 - 2
+  +BB:0 - 0
+
+$Pr(BB) = 4+2/8=0.75$
+
+# Hard
+## Question 1
+$(0.2^2 + 0.1^2)/2=0.025$
+
+## Question 2
+$Pr(speciesA|twins) = Pr(twins|speciesA)Pr(speciesA)/Pr(twins)$
+
+$Pr(speciesA|twins) = (0.1*0.5)/(0.5*0.1+0.5*0.2)=0.33$
+
+## Question 3
+Likelihood of new data: singleton birth:
+$Pr(speciesA|single) = Pr(single|speciesA)Pr(speciesA)/Pr(single)$
+
+$Pr(speciesA|single) = (0.9*0.5)/(0.5*0.9+0.5*0.8) = 0.529$
+
+Posterior = 0.33*0.529 = 0.1746
+
+## Question 4
+Prior = both species equally plausible.
+Information about the test:
+```{r}
+df <- data.frame(ActualA=c(0.8,0.35), ActualB=c(0.2,0.65))
+row.names(df) <- c("TestedA","TestedB")
+kable(df)
+```
+
+$Pr(speciesA|testA)=0.8$
+
+Posterior = prior x likelihood = 0.1746 x 0.8 = 0.1397
+
+
+  
+
+
+
 
