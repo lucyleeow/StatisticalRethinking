@@ -1,8 +1,6 @@
 ---
 title: "Statistical Rethinking - Chapter 2"
-output:
-  html_document:
-    df_print: paged
+output: html_document
 ---
 
 ```{r, echo=FALSE, message=FALSE}
@@ -185,6 +183,8 @@ $Pr(card1\cup card4 |data)=4/5$
 
 $Pr(card1|data) = 2/4=0.5$
 
+Using likelihood
+
 ## Question 7
 
 * BB:2
@@ -196,9 +196,71 @@ $Pr(card1|data) = 2/4=0.5$
 
 $Pr(BB) = 4+2/8=0.75$
 
+![](images/chap2-1.jpg)
+
+Using priors to calculate this:
+
+```{r}
+##ORDER:
+# BB,BW,WW
+
+#Data 1: card 1 is black side up
+#Prior = all cards equally likely to be drawn. 
+prior <- c(1,1,1)
+#likelihood of each card, given data
+likelihood <- c(2,1,0)
+
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+
+#Data 2: card 2 is white side up
+prior <- posterior
+
+likelihood <- c(3,2,1)
+
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+
+posterior
+```
+
 # Hard
 ## Question 1
-$(0.2^2 + 0.1^2)/2=0.025$
+
+```{r}
+#Both species equally likely
+prior <- c(0.5,0.5)
+#Given data (twins), plausibility of species A and species B
+likelihood <- c(0.1,0.2)
+
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+
+#Likelihood of next twins?
+
+posterior[1]*0.1 + posterior[2]*0.2
+```
+
+Alternative way of computing:
+Think of the species A prior as the plausibility of species A given the 1st bit of data, twins:
+$$Pr(A|twins)=\frac{Pr(twins|A)Pr(A)}{Pr(twins)}$$
+
+$$Pr(A|twins)=\frac{0.1*0.5}{0.15}=0.33$$
+
+The species B prior is the plausibility of species B given the 1st bit of data, twins:
+$$Pr(B|twins)=\frac{Pr(twins|B)Pr(B)}{Pr(twins)}$$
+
+$$Pr(A|twins)=\frac{0.2*0.5}{0.15}=0.66$$
+
+The likelihood that the next birth will also be twins, using the law of total probability, is:
+
+$$Pr(A|twins)*Pr(twins|A)+Pr(B|twins)*Pr(twins|B) \\= 0.33*0.1+0.66*0.2=0.166$$
+
+From [link](http://www.rpubs.com/andersgs/my_solutions_chapter2_statrethink)
+The result of 0.167 makes sense. If the species was species B, then the probability of twins would be 0.2, if species A, it would be 0.1. As we don’t know the species, it makes sense that the probability should be something in between those two values. Where exactly, will depend on how plausible species A and B are. Without any additional information, we see that that the probability of the twins is 0.15, or exactly in the middle. When observing a single twin birth, we should update the relative plausibility of each species accordingly. In doing so, the probability of observing twins in the next birth moves a little towards 0.2, reflecting that now species B is more plausible than species A.
 
 ## Question 2
 $Pr(speciesA|twins) = Pr(twins|speciesA)Pr(speciesA)/Pr(twins)$
@@ -206,12 +268,26 @@ $Pr(speciesA|twins) = Pr(twins|speciesA)Pr(speciesA)/Pr(twins)$
 $Pr(speciesA|twins) = (0.1*0.5)/(0.5*0.1+0.5*0.2)=0.33$
 
 ## Question 3
-Likelihood of new data: singleton birth:
-$Pr(speciesA|single) = Pr(single|speciesA)Pr(speciesA)/Pr(single)$
 
-$Pr(speciesA|single) = (0.9*0.5)/(0.5*0.9+0.5*0.8) = 0.529$
+```{r}
+#prior = Pr(A|twins), Pr(B|twins)
+prior <- c(0.33,0.66)
+#Pr(A|single)
+#(0.9*0.5)/((0.9+0.8)/2)
+#Pr(B|single)
+#(0.8*0.5)/((0.9+0.8)/2)
+likelihood <- c(0.53,0.47)
 
-Posterior = 0.33*0.529 = 0.1746
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+posterior
+```
+
+You can also calculate:
+$$Pr(speciesA|single) = Pr(single|speciesA)Pr(speciesA)/Pr(single)$$
+Note however, that $Pr(speciesA)$ should be the updated one, given the 1st twins birth. We calculated this above:
+$$Pr(speciesA|single) = (0.9*0.33)/(0.9*0.33)/(0.33*0.9+0.66*0.8) = 0.36$$
 
 ## Question 4
 Prior = both species equally plausible.
@@ -222,9 +298,32 @@ row.names(df) <- c("TestedA","TestedB")
 kable(df)
 ```
 
-$Pr(speciesA|testA)=0.8$
+Using only test result:
+```{r}
+prior <- c(0.5,0.5)
+likelihood <- c(0.8,0.35)
 
-Posterior = prior x likelihood = 0.1746 x 0.8 = 0.1397
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+posterior
+```
+
+Using the birthing data (twins then singleton):
+
+```{r}
+#use test data above as new prior
+prior <- posterior
+
+#calcualted above
+likelihood <- c(0.3605442,0.6394558)
+
+unstdPosterior <- prior * likelihood
+
+posterior <- unstdPosterior/sum(unstdPosterior)
+posterior
+```
+
 
 
   
