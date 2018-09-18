@@ -1,6 +1,7 @@
 ---
 title: "Statistical Rethinking - Chapter 2"
 output: html_notebook 
+author: Lucy Liu
 ---
 
 ```{r, echo=FALSE, message=FALSE}
