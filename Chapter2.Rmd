@@ -1,7 +1,9 @@
 ---
 title: "Statistical Rethinking - Chapter 2"
-output: html_notebook 
-author: Lucy Liu
+author: "Lucy Liu"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r, echo=FALSE, message=FALSE}

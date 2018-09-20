@@ -1,7 +1,9 @@
 ---
 title: "Statistical Rethinking - Chapter 3"
-output: html_notebook 
-author: Lucy Liu
+author: "Lucy Liu"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r, echo=FALSE, message=FALSE}
@@ -84,7 +86,9 @@ posterior <- posterior / sum(posterior)
 ```{r}
 set.seed(100)
 samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
+```
 
+```{r}
 HPDI(samples, prob = 0.9)
 ```
 
@@ -99,10 +103,14 @@ Probability of observing 8 water:
 sum(w == 8)/1e4
 ```
 
-4. Using the posterior distribution from 8/15 data, calcualte probability of observing 6/9.
+
+4. Using the posterior distribution from 8/15 data, calculate probability of observing 6/9.
+
 ```{r}
 w <- rbinom(1e4, size = 9, prob = samples)
+```
 
+```{r}
 sum(w == 6)/1e4
 ```
 
